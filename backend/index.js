@@ -8,9 +8,10 @@ const cors = require('cors');
 
 const mongoose = require('mongoose');
 
-const { handleSaveUser } = require('./controller/Users');
-
 const server = express()
+// const { handleSaveUser } = require('./controller/Users');
+const { handleCreatUser, handleSendDataFromDb } = require('./routes');
+
 
 mongoose.set('strictQuery', false);
 
@@ -27,14 +28,12 @@ server.use(express.json({
 require('dotenv').config({
     path: appRootPath + '/.env'
 })
+// const userfinded=User.find()
+// console.log(userfinded);
+server.use('/' ,handleSendDataFromDb );
 
-server.get('/user' , (req,res) => {
-    res.status(201).json({
-        massage: 'shod ',
-    })
-});
-
-server.post('/user', handleSaveUser);
+// server.post('/user', handleSaveUser);
+server.use('/',handleCreatUser)
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`server runnig at:${PORT}`))

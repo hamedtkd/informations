@@ -8,6 +8,8 @@ import styled from "styled-components";
 import { signUpServices } from "../../api/services/signup";
 import { updateServices } from "../../api/services/update";
 import axios from "axios";
+import { toast } from 'react-toastify';
+
 
 export default function Modal() {
     const [data, setData] = useState();
@@ -16,28 +18,30 @@ export default function Modal() {
             const result = await axios(
                 'http://localhost:3000/user',
             );
-            console.log(result);
-            setData(result.data.token);
+            // console.log(result);
+            setData(result.data.data[0]);
         };
         fetchData();
     }, []);
-  
-    const [name, setName] = useState("")
-    const [job, setJob] = useState("")
-    const [tell, setTell] = useState("")
-    const [email, setEmail] = useState("")
-    const [homepage, setHomepage] = useState("")
-    const [picture, setPicture] = useState("")
-    const [adress, setAdress] = useState("")
+
+
+    const [name, setName] = useState(data?.name)
+    const [job, setJob] = useState(data?.job)
+    const [tell, setTell] = useState(data?.tell)
+    const [email, setEmail] = useState(data?.email)
+    const [homepage, setHomepage] = useState(data?.homepage)
+    const [picture, setPicture] = useState(data?.picture)
+    const [adress, setAdress] = useState(data?.adress)
+    const [_id, setId] = useState(data?._id);
 
     const [newThem, setNewThem] = useState('');
-    const render = () => {
-        console.log(updateServices());
+    // const render = () => {
+    //     console.log(updateServices());
 
-    }
-    
+    // }
+
     let [newModal, setNewModal] = useState({
-        // id,
+        _id,
         theme: 'rgb(255, 0, 0)',
         name,
         job,
@@ -47,34 +51,15 @@ export default function Modal() {
         adress,
         picture,
     });
-    if (data) {newModal=data}
+    if (data) { newModal = { ...data } }
+
 
     document.body.style = `background: linear-gradient(50deg, ${newModal?.theme} 10%, rgba(255, 255, 255, 0)0%), linear-gradient(50.49deg, rgba(30, 27, 27, 1) 20%, rgba(255, 255, 255, 0)0%), linear-gradient(50.84deg, ${newModal.theme}30%, rgba(255, 255, 255, 0)0%), linear-gradient(230.56deg,  ${newModal.theme} 10%,rgba(255, 255, 255, 0) 0%),linear-gradient(230.56deg,  rgba(30, 27, 27,1) 20%,rgba(255, 255, 255, 0)0%) ;`
-    const Main = styled.main`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
-    const Profile = styled.div`:before {
-    top: 0;
-    left: 0;
-    right: 00%;
-    bottom: 00%;
-    border-radius: 50%;
-    border-top: 3px solid ${newModal.theme};
-    border-left: 3px solid ${newModal.theme};
-  }`
-    const Button = styled.button`
-  background-color: ${newModal?.theme};
-  font-size:2rem;
-  padding:1rem 1.5rem;
 
-  
-  `
 
-    const handelShowModal = () => {
-        console.log("object");
-    }
+    // const handelShowModal = () => {
+    //     console.log("object");
+    // }
 
     const [showModal, setShowModal] = useState(false);
 
@@ -104,17 +89,8 @@ export default function Modal() {
         // blobToBase64(newModal.picture).then(res => {
         //     setNewModal({...newModal, picture : res})})
         // setNewModal({ ...newModal, theme:rgb, name, job, adress, tell, email, homepage, picture })
-        setNewModal({
-            name,
-            job,
-            adress,
-            tell
-            , email
-            , homepage
-            , picture
-            , theme: rgb
-        })
         newModal = {
+            _id:data?._id,
             theme: rgb,
             name,
             job,
@@ -124,9 +100,32 @@ export default function Modal() {
             , homepage
             , picture
         }
-        signUpServices(JSON.stringify(newModal))
-
+        signUpServices(JSON.stringify(newModal)).then((res) => {
+        })
+        location.reload()
     };
+    const Main = styled.main`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  `
+    const Profile = styled.div`:before {
+      top: 0;
+      left: 0;
+      right: 00%;
+      bottom: 00%;
+      border-radius: 50%;
+      border-top: 3px solid ${newModal.theme};
+      border-left: 3px solid ${newModal.theme};
+    }`
+    const Button = styled.button`
+    background-color: ${newModal?.theme};
+    font-size:2rem;
+    padding:1rem 1.5rem;
+  
+    
+    `
+    // console.log(newModal);
     return (
         <>
             <Main >
@@ -191,19 +190,19 @@ export default function Modal() {
                         <div className="modal-desc">
                             <form className="form">
                                 <label htmlFor="favcolor">Select your favorite color:</label>
-                                <input onChange={(e) => setNewThem(e.target.value)} className="inputs" type="color" id="favcolor" name="favcolor" />
+                                <input defaultValue={data?.theme} onChange={(e) => setNewThem(e.target.value)} className="inputs" type="color" id="favcolor" name="favcolor" />
                                 <label htmlFor="name" >Enter your name:</label>
-                                <input placeholder="Enter your name" type="text" name="name" id="name" onChange={(e) => setName(e.target.value)} />
+                                <input defaultValue={data?.name} placeholder="Enter your name" type="text" name="name" id="name" onChange={(e) => setName(e.target.value)} />
                                 <label htmlFor="job">Enter your job:</label>
-                                <input placeholder="Enter your job" type="text" name="job" id="job" onChange={(e) => setJob(e.target.value)} />
+                                <input defaultValue={data?.job} placeholder="Enter your job" type="text" name="job" id="job" onChange={(e) => setJob(e.target.value)} />
                                 <label htmlFor="tel">Enter your tell number:</label>
-                                <input placeholder="Enter your tell number" type="tel" id="tel" name="tel" onChange={(e) => setTell(e.target.value)} />
+                                <input defaultValue={data?.tell} placeholder="Enter your tell number" type="tel" id="tel" name="tel" onChange={(e) => setTell(e.target.value)} />
                                 <label htmlFor="email">Enter your email:</label>
-                                <input placeholder="Enter your email" type="email" id="email" name="email" onChange={(e) => setEmail(e.target.value)} />
+                                <input defaultValue={data?.email} placeholder="Enter your email" type="email" id="email" name="email" onChange={(e) => setEmail(e.target.value)} />
                                 <label htmlFor="homepage">Add your homepage:</label>
-                                <input placeholder="Add your homepage" type="url" id="homepage" name="homepage" onChange={(e) => setHomepage(e.target.value)} />
+                                <input defaultValue={data?.homepage} placeholder="Add your homepage" type="url" id="homepage" name="homepage" onChange={(e) => setHomepage(e.target.value)} />
                                 <label htmlFor="adress">Add your company adress:</label>
-                                <input placeholder="Add your company adress" type="text" id="adress" name="adress" onChange={(e) => setAdress(e.target.value)} />
+                                <input defaultValue={data?.adress} placeholder="Add your company adress" type="text" id="adress" name="adress" onChange={(e) => setAdress(e.target.value)} />
                                 <label htmlFor="picture">Add your picture:</label>
                                 {/* <input type="file" id="picture" name="picture" onChange={(e)=>setFile(e)} /> */}
                                 <form onChange={(e) => setPicture(e.target.value)} className="d-flex">
